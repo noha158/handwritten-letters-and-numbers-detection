@@ -1,0 +1,76 @@
+<!DOCTYPE HTML5>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Handwritten Digits and Letters Recognition</title>  
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/drawingboard.min.css') }}">
+    </head>
+    <body>
+        <section>
+            <div class="container">
+                <br><br>
+                <h3>Machine Learning Project -- Final Phase</h3>
+                <h5>Predicting handwritten letters and digits</h5>
+                <h6>By: Noha Abualfadle Mohamed - Mohamed Shahawy</h6>
+                <br>
+                <div style="text-align: center;">
+                    <div class="board" id="default-board"></div>
+                    <br>
+                    <button id="button" class="waves-effect waves-light btn" style="width: 202px; margin-left:1%; background: #3498db;" onclick=predict()>Predict</button>
+                </div>
+                <div class="row center-align">
+                
+                 </div>
+                 <br>
+                <div class="result" style="color:#a3a3a3; text-align: center;"><span id="result">Result</span></div>
+            </div>
+        </section>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script> 
+        <script src="{{ url_for('static', filename='js/drawingBoard.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/hermiteResize.js') }}"></script>
+        <script>
+            var board = new DrawingBoard.Board('default-board', {
+                controls: [
+                    { DrawingMode: {pencil:false, eraser:false, filler:false } },
+                    { Navigation: {back: false, forward:false} }
+                ],
+                size: 12,
+                enlargeYourContainer: true
+            });
+
+            function predict(){
+                var resizedCanvas = document.createElement('canvas');
+                resample_single(board.canvas, 28, 28, true, resizedCanvas);
+                var ctx = resizedCanvas.getContext("2d");
+                var imgData= ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+                var data = imgData.data;
+                var grayscale_list =  []
+                for (var i = 0; i < data.length; i += 4) {
+                    var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                    data[i] = avg; // red
+                    data[i + 1] = avg; // green
+                    data[i + 2] = avg; // blue
+                    grayscale_list.push(avg);
+                }
+
+                $(function () {
+                    $('#result').html("Predicting . . .");
+                    $.ajax({
+                        url: '/predict',
+                        data: JSON.stringify(grayscale_list),
+                        contentType: "application/json; charset=utf-8",
+                        type: 'POST',
+                        success: function (response) {
+                            console.log(response);
+                            $('#result').html("Prediction : <span style='font-size:24px'>"+response['character']+"</span></br> Confidence : "+response['confidence']);
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                });
+            } 
+        </script>
+    </body>
+</html>

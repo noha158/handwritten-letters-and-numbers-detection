@@ -1,0 +1,88 @@
+{
+	"_comments": [
+		"run_type possible options: trainTest, train, testWithWeights, predictWithWeights",
+		"dataset_percentage is the percentage of the dataset to be used (i.e: use 70% of the entire dataset for faster training)",
+		"Architecture set to mimic Lenet"
+	],
+	"epochs": 1,
+	"learning_rate": 0.01,
+	"batch_size": 256,
+	"num_of_classes": 47,
+	"image_width": 28,
+	"image_height": 28,
+	"test_size": 100,
+	"run_type": "trainTest",
+	"scores_filename": "scores.json",
+	"weights_filename": "weights.pkl",
+	"dataset_percentage": 1.0,
+	"dataset_paths": {
+		"train_images": "dataset/emnist-balanced-train-images-idx3-ubyte",
+		"train_labels": "dataset/emnist-balanced-train-labels-idx1-ubyte",
+		"test_images": "dataset/emnist-balanced-test-images-idx3-ubyte",
+		"test_labels": "dataset/emnist-balanced-test-labels-idx1-ubyte"
+	},
+	"layers": [
+		{
+			"type": "Conv",
+			"input_channels": 1,
+			"filter_size": 5,
+			"filter_count": 6,
+			"padding": 2,
+			"stride": 1
+		},
+		{
+			"type": "ReLu"
+		},
+		{
+			"type": "MaxPool",
+			"size": 2,
+			"stride": 2
+		},
+		{
+			"type": "Conv",
+			"input_channels": 6,
+			"filter_size": 5,
+			"filter_count": 16,
+			"padding": 0,
+			"stride": 1
+		},
+		{
+			"type": "ReLu"
+		},
+		{
+			"type": "MaxPool",
+			"size": 2,
+			"stride": 2
+		},
+		{
+			"type": "Conv",
+			"input_channels": 16,
+			"filter_size": 5,
+			"filter_count": 240,
+			"padding": 0,
+			"stride": 1
+		},
+		{
+			"type": "ReLu"
+		},
+		{
+			"type": "Flatten"
+		},
+		{
+			"type": "Dense",
+			"input": 240,
+			"output": 168
+		},
+		{
+			"type": "ReLu"
+		},
+		{
+			"type": "Dense",
+			"input": 168,
+			"output": 47
+		},
+		{
+			"type": "Softmax"
+		}
+	]
+}
